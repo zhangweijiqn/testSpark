@@ -35,22 +35,6 @@ object Mytest {
 
   def testCombineByKey(): Unit ={
 
-    /*val createCombiner = (v: Double) => {
-      val queue = new BoundedPriorityQueue[Double](100);
-      queue+=(v)
-      queue
-    }
-
-    val mergeValue = (q:BoundedPriorityQueue[Double],v: (Long,Double)) => {
-      q += v._2
-    }
-    val mergeCombiners = (q1: BoundedPriorityQueue[Double], q2:BoundedPriorityQueue[Double]) => {
-      q1.++=(q2)
-      q1
-    }
-
-    val testData = sc.parallelize(Seq((1L,0.1),(1L,0.2),(1L,0.3),(2L,0.2),(2L,0.5)))
-    testData.combineByKey(createCombiner,mergeValue,mergeCombiners,10)*/
     var rdd1 = sc.makeRDD(Array(("A",1),("A",20),("A",3),("A",100),("A",200),("A",3),("B",1),("B",2),("C",1),("B",1000),("B",802),("B",600),("C",601)))
 
     /*  test1  */
@@ -71,7 +55,7 @@ object Mytest {
 
     /*  test3  */
     val createCombiner = (v: Int) => {   //一个新出现的key先创建Combiner
-      val queue = new BoundedPriorityQueue[Int](2)(Ordering.Option.reverse);
+      val queue = new BoundedPriorityQueue[Int](2)
       queue+=(v)
       queue
     }
@@ -90,9 +74,37 @@ object Mytest {
     rdd4.collect().foreach(x=>{println(x._1+":"+x._2.toArray.mkString(","))})
   }
 
+  def testCombineByKeyReverseOrder(): Unit ={
+    implicit val KeyOrdering = new Ordering[Tuple2[Long,Double]] {
+      override def compare(x:Tuple2[Long,Double], y: Tuple2[Long,Double]): Int = {
+        (x._2*100000 - y._2*100000).toInt //乘的倍数决定了double运算的精度
+      }
+    }
+
+    val createCombiner = (v: (Long,Double)) => {
+      val queue = new BoundedPriorityQueue[(Long,Double)](2)(KeyOrdering.reverse);
+      queue+=(v)
+      queue
+    }
+
+    val mergeValue = (q:BoundedPriorityQueue[(Long,Double)],v: (Long,Double)) => {
+      q += v
+    }
+    val mergeCombiners = (q1: BoundedPriorityQueue[(Long,Double)], q2:BoundedPriorityQueue[(Long,Double)]) => {
+      q1.++=(q2)
+      q1
+    }
+
+    val testData = sc.parallelize(Seq((1L,(1L,0.5)),(1L,(2L,0.2)),(1L,(3L,0.3)),(2L,(2L,0.2)),(2L,(3L,0.5))))
+    val combineData = testData.combineByKey(createCombiner,mergeValue,mergeCombiners)
+    combineData.collect().foreach(x=>{println(x._1+":"+x._2.toMap)})
+  }
+
   def main(args:Array[String]) {
 //    testGetRDDVector
 //    testRDDCartesian
-    testCombineByKey()
+//    testCombineByKey()
+
+
   }
 }
