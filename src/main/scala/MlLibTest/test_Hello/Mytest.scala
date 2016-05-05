@@ -52,11 +52,16 @@ object Mytest {
     val testData = sc.parallelize(Seq((1L,0.1),(1L,0.2),(1L,0.3),(2L,0.2),(2L,0.5)))
     testData.combineByKey(createCombiner,mergeValue,mergeCombiners,10)*/
     var rdd1 = sc.makeRDD(Array(("A",1),("A",20),("A",3),("A",100),("A",200),("A",3),("B",1),("B",2),("C",1),("B",1000),("B",802),("B",600),("C",601)))
+
+    /*  test1  */
     val rdd2 = rdd1.combineByKey((v : Int) => v + "_",
       (c : String, v : Int) => c + "@" + v,
       (c1 : String, c2 : String) => c1 + "$" + c2)
     rdd2.collect.foreach(println)
 
+    /*  test2
+    *  下面这个过程类似groupByKey的实现，List替换为CompactBuffer
+    * */
     val rdd3 = rdd1.combineByKey(
       (v : Int) => List(v),
       (c : List[Int], v : Int) => v :: c,
@@ -64,25 +69,23 @@ object Mytest {
     )
     rdd3.collect.foreach(println)
 
-    val createCombiner = (v: Int) => {
+    /*  test3  */
+    val createCombiner = (v: Int) => {   //一个新出现的key先创建Combiner
       val queue = new BoundedPriorityQueue[Int](2)(Ordering.Option.reverse);
       queue+=(v)
       queue
     }
-
-    val mergeValue = (q:BoundedPriorityQueue[Int],v: (Int)) => {
+    val mergeValue = (q:BoundedPriorityQueue[Int],v: (Int)) => {   //相同的key元素和已存在key的combiner进行merge
       q += v
     }
-    val mergeCombiners = (q1: BoundedPriorityQueue[Int], q2:BoundedPriorityQueue[Int]) => {
+    val mergeCombiners = (q1: BoundedPriorityQueue[Int], q2:BoundedPriorityQueue[Int]) => {   //不同key的combiner之间进行merge
       q1.++=(q2)
       q1
     }
     val rdd4 = rdd1.combineByKey(
       createCombiner,
       mergeValue,
-      mergeCombiners,
-    10
-    )
+      mergeCombiners)
     println("-------------------------------")
     rdd4.collect().foreach(x=>{println(x._1+":"+x._2.toArray.mkString(","))})
   }
