@@ -8,6 +8,9 @@ import org.apache.spark.mllib.linalg.Vector
 import org.apache.spark.mllib.stat.{MultivariateStatisticalSummary, Statistics}
 /**
  * Created by zhangwj on 16-2-16.
+ *
+ * 测试 combineByKey (ReverseOrder)以及 BoundedPriorityQueue
+ *
  */
 object Mytest {
 
