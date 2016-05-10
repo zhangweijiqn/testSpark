@@ -7,7 +7,7 @@ import scala.collection.mutable.ArrayBuffer
 /**
  * Created by zhangwj on 16-5-10.
  */
-class IteblogPartitioner(numParts: Int) extends Partitioner {
+class MyPartitioner(numParts: Int) extends Partitioner {
   override def numPartitions: Int = numParts
 
   override def getPartition(key: Any): Int = {
@@ -21,7 +21,7 @@ class IteblogPartitioner(numParts: Int) extends Partitioner {
   }
 
   override def equals(other: Any): Boolean = other match {
-    case iteblog: IteblogPartitioner =>
+    case iteblog: MyPartitioner =>
       iteblog.numPartitions == numPartitions
     case _ =>
       false
@@ -69,11 +69,23 @@ object testPartitioner {
   }
 
   def userDefinePartition(): Unit ={
-
+    val rdd = sc.parallelize(Seq("http://www.jd.com/a","http://www.jd.com/b","http://www.jd.com/c","http://www.google.com/a","http://www.google.com/b","http://www.baidu.com")).map(x => (x, x))
+    val myPartitioner = new MyPartitioner(3)
+    rdd.partitionBy(myPartitioner).mapPartitionsWithIndex{ (idx, iter) => //iter是一个集合（一个分区内的）
+      val candidates = ArrayBuffer.empty[(String, String)]
+      while (iter.hasNext) {
+        val item = iter.next()
+        val pairData = (item._1,item._2)
+        candidates+=pairData
+      }
+      Iterator((idx,candidates))  //sample 采集的样本，n就是sampleSizePerPartition
+    }.collect().foreach(println)
   }
 
   def main(args: Array[String]): Unit = {
-    testRangePartition
+//    testRangePartition
+//    testHashPartitioner
+    userDefinePartition()
   }
 
 }
