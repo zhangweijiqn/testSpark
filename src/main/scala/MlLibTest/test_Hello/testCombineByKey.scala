@@ -12,7 +12,7 @@ import org.apache.spark.mllib.stat.{MultivariateStatisticalSummary, Statistics}
  * 测试 combineByKey (ReverseOrder)以及 BoundedPriorityQueue
  *
  */
-object Mytest {
+object testCombineByKey {
 
   //获取spark RDD[Vector]
   val conf = new SparkConf().setAppName("MyTest").setMaster("local[2]").setSparkHome(System.getenv("SPARK_HOME"))
