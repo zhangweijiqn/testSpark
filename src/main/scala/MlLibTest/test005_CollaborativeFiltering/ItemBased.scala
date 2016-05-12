@@ -138,28 +138,33 @@ object ItemBased {
 
     //    val g = hiveContext.sql("select usrid, collect_list(product_id), sum(ordercount) from tmp.temp_user_product group by usrid")
 
+
+    /*过滤操作，每个用户取最喜欢的100个商品，对用户groupBy*/
     val ratings = oriRatings.groupBy(k => k._1).flatMap(x => (x._2.toList.sortWith((x, y) => x._3 > y._3).take(100)))
-    //每个用户购买物品按照ratins大小取前100最喜欢的 (user,item,rating)
+      //每个用户购买物品按照ratins大小取前100最喜欢的 (user,item,rating)
 
+
+    /*计算item全局统计数据，对item groupBy*/
     val item2manyUser = ratings.groupBy(tup => tup._2)  //按照用商品id group, (item,Iterable(user,item,rating))
-    val numRatersPerItem = item2manyUser.map(grouped => (grouped._1, grouped._2.size))  //计算每个item的购买用户个数 (item,num)
-
-    val ratingsWithSize = item2manyUser.join(numRatersPerItem).   //(item,(CompactBuffer(user,item,rating),num))
+    val numRatersPerItem = item2manyUser.map(grouped => {
+        val ratingsSum = grouped._2.map(x=>x._3).sum  //一个商品所有打分均值信息
+        val ratingsPowSum = grouped._2.map(x=>math.pow(x._3,2)).sum //一个商品所有打分平方均值，下面还可以补充其他统计信息
+        (grouped._1, grouped._2.size,ratingsSum,ratingsPowSum)
+      })
+      //将上面得到的结果再放回原记录中
+    val ratingsWithSize = item2manyUser.join(numRatersPerItem.keyBy(_._1)).   //(item,(CompactBuffer(user,item,rating),num,ratingsSum,ratingsPowSum))
       flatMap(joined => {
-        joined._2._1.map(f => (f._1, f._2, f._3, joined._2._2))   //(user,item,rating,num)
+        joined._2._1.map(f => (f._1, f._2, f._3, joined._2._2,joined._2._2._3,joined._2._2._4))   //(user,item,rating,num,ratingsSum,ratingsPowSum)
       })
 
-    // ratingsWithSize now contains the following fields: (user, item, rating, numRaters).
-    //(user,(user, item, rating, numRaters))
-    val ratings2 = ratingsWithSize.keyBy(tup => tup._1)
 
-    // join on userid and filter item pairs such that we don't double-count and exclude self-pairs
-    // user内笛卡尔积，计算两两物品的组合
+    /*  user内笛卡尔积（join针对kv操作）(倒排索引的思想)，计算两两物品的组合 */
+    //(user,(user, item, rating, numRaters,ratingsSum,ratingsPowSum))
+    val ratings2 = ratingsWithSize.keyBy(tup => tup._1)
     //***计算半矩阵，减少计算量
     val ratingPairs = ratings2.join(ratings2).filter(f => f._2._1._2 < f._2._2._2)  // RDD[(user, ((user, item, rating, numRaters), (user, item, rating, numRaters)))]
 
-    // compute raw inputs to similarity metrics for each item pair
-
+    //计算每对组合的统计信息
     val tempVectorCalcs =
       ratingPairs.map(data => {
         val key = (data._2._1._2, data._2._2._2)  //(item,item)
@@ -170,7 +175,12 @@ object ItemBased {
             math.pow(data._2._1._3, 2), // square of rating item 1
             math.pow(data._2._2._3, 2), // square of rating item 2
             data._2._1._4, // number of raters item 1
-            data._2._2._4) // number of raters item 2
+            data._2._2._4,// number of raters item 2
+            data._2._1._5,//sum of raters item1
+            data._2._2._5,//sum of raters item2
+            data._2._1._6,//pow sum of raters item1
+            data._2._2._6//pow sum of raters item2
+            )
         (key, stats)
       })
     val vectorCalcs = tempVectorCalcs.groupByKey().map(data => {  //计算两个物品之间，RDD[((Int, Int), Iterable[(Int, Int, Int, Double, Double, Int, Int)])]
@@ -184,12 +194,16 @@ object ItemBased {
       val rating2Sq = vals.map(f => f._5).sum
       val numRaters = vals.map(f => f._6).max
       val numRaters2 = vals.map(f => f._7).max
-      (key, (size, dotProduct, ratingSum, rating2Sum, ratingSq, rating2Sq, numRaters, numRaters2))
+      val numRatersSum = vals.map(f => f._8).max
+      val numRaters2Sum = vals.map(f => f._9).max
+      val numRatersPowSum = vals.map(f => f._10).max
+      val numRaters2PowSum = vals.map(f => f._11).max
+      (key, (size, dotProduct, ratingSum, rating2Sum, ratingSq, rating2Sq, numRaters, numRaters2,numRatersSum,numRaters2Sum,numRatersPowSum,numRaters2PowSum))
     })
     //.filter(x=>x._2._1>1)
 
     //补齐另一半矩阵
-    val inverseVectorCalcs = vectorCalcs.map(x => ((x._1._2, x._1._1), (x._2._1, x._2._2, x._2._4, x._2._3, x._2._6, x._2._5, x._2._8, x._2._7)))
+    val inverseVectorCalcs = vectorCalcs.map(x => ((x._1._2, x._1._1), (x._2._1, x._2._2, x._2._4, x._2._3, x._2._6, x._2._5, x._2._8, x._2._7,x._2._10,x._2._9,x._2._12,x._2._11)))
     //得到总的矩阵你（对称矩阵）
     val vectorCalcsTotal = vectorCalcs ++ inverseVectorCalcs
 
@@ -198,8 +212,8 @@ object ItemBased {
     val tempSimilarities =
       vectorCalcsTotal.map(fields => {
         val key = fields._1
-        val (size, dotProduct, ratingSum, rating2Sum, ratingNormSq, rating2NormSq, numRaters, numRaters2) = fields._2
-        val cosSim = cosineSimilarity(dotProduct, scala.math.sqrt(ratingNormSq), scala.math.sqrt(rating2NormSq)) * size / (numRaters * math.log10(numRaters2 + 10))
+        val (size, dotProduct, ratingSum, rating2Sum, ratingNormSq, rating2NormSq, numRaters, numRaters2,numRatersSum,numRaters2Sum,numRatersPowSum,numRaters2PowSum) = fields._2
+        val cosSim = cosineSimilarity(dotProduct, scala.math.sqrt(numRatersPowSum), scala.math.sqrt(numRaters2PowSum))
         /*val corr = correlation(size, dotProduct, ratingSum, rating2Sum, ratingNormSq, rating2NormSq)
         val regCorr = regularizedCorrelation(size, dotProduct, ratingSum, rating2Sum,
           ratingNormSq, rating2NormSq, PRIOR_COUNT, PRIOR_CORRELATION)
