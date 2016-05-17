@@ -6,49 +6,11 @@
 
     <groupId>TestSpark</groupId>
     <artifactId>TestSpark</artifactId>
+    <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
-
-    <properties>
-        <scala.binary.version>2.10</scala.binary.version>
-        <spark.version>1.6.0</spark.version>
-    </properties>
-
-    <dependencies>
-        <dependency>
-            <groupId>org.apache.spark</groupId>
-            <artifactId>spark-core_${scala.binary.version}</artifactId>
-            <version>${spark.version}</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.spark</groupId>
-            <artifactId>spark-mllib_${scala.binary.version}</artifactId>
-            <version>${spark.version}</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.spark</groupId>
-            <artifactId>spark-sql_${scala.binary.version}</artifactId>
-            <version>${spark.version}</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.spark</groupId>
-            <artifactId>spark-hive_${scala.binary.version}</artifactId>
-            <version>${spark.version}</version>
-        </dependency>
-
-
-        <!--OptionParser-->
-<!--        <dependency>
-            <groupId>com.github.scopt</groupId>
-            <artifactId>scopt_${scala.binary.version}</artifactId>
-            <version>3.2.0</version>
-        </dependency>-->
-    </dependencies>
+    <modules>
+        <module>test</module>
+    </modules>
 
     <build>
     <finalName>test</finalName>
@@ -65,6 +27,37 @@
                     </goals>
                 </execution>
             </executions>
+        </plugin>
+        <!-- resources 编码  -->
+        <plugin>
+            <artifactId>maven-resources-plugin</artifactId>
+            <version>2.7</version>
+            <configuration>
+                <encoding>UTF-8</encoding>
+            </configuration>
+        </plugin>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-jar-plugin</artifactId>
+            <version>2.4</version>
+            <configuration>
+                <archive>
+                    <addMavenDescriptor>false</addMavenDescriptor>
+                    <index>true</index>
+                    <manifest>
+                        <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                        <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                    </manifest>
+                    <manifestEntries>
+                        <Implementation-Build></Implementation-Build>
+                    </manifestEntries>
+                </archive>
+                <excludes>
+                    <exlude>**/*.properties</exlude>
+                    <exlude>**/*.xml</exlude>
+                    <exlude>**/*.data</exlude>
+                </excludes>
+            </configuration>
         </plugin>
     </plugins>
     </build>
