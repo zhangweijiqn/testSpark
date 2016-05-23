@@ -11,6 +11,8 @@ object testReduceByKey {
 
   def main(args: Array[String]) {
     val data = sc.parallelize(Seq((1,1),(1,2),(2,2),(2,3),(3,3)))
+    data.coalesce(1).saveAsTextFile("test/target/test/data")  //rdd写到一个文件里，多个分区会写多个文件
+
     val countData = data.countByKey()//根据key的数量查看是否有数据倾斜的情况。
     countData.foreach(println)
     val reduceData = data.reduceByKey((a,b)=>a+b,1000) //RDD groupBy,设置并行度（也就是task的数量，默认200，在数量小的情况下设置大了反而影响性能）
