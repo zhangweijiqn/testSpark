@@ -1,5 +1,7 @@
 /*
- * IDF(t,D)=log|D|+1/( DF(t,D)+1),
+   reference: https://en.wikipedia.org/wiki/Tf–idf
+
+ * IDF(t,D)=log( |D|+1/(DF(t,D)+1) ),
  * TFIDF(t,d,D)=TF(t,d)⋅IDF(t,D).
  *
  * Note: spark.mllib doesn’t provide tools for text segmentation. We refer users to the Stanford NLP Group and scalanlp/chalk.

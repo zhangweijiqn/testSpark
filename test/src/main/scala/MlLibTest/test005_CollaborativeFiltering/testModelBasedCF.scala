@@ -25,7 +25,7 @@ object testModelBasedCF {
   def main(args: Array[String]) {
 
     // Load and parse the data
-    val data = sc.textFile("src/main/resources/als_test.data")
+    val data = sc.textFile("test/src/main/resources/als_test.data")
     val ratings = data.map(_.split(',') match { case Array(user, item, rate) => //match应用在map里
       //读入的格式为一个3元组，格式(user,item,ratings),相当于每个元组为原matrix的一个元素
       Rating(user.toInt, item.toInt, rate.toDouble)
