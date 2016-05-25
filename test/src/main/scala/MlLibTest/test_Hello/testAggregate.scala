@@ -21,6 +21,7 @@ object testAggregate {
       println("combOp: " + a + "\t" + b)
       a + b
     }
+
     val aggregateData = data.aggregate(0.000)(seqOP,combOp)   //第一个参数为初始值，传入的初始值可以是一个不同于rdd的类型。
 //    println(aggregateData)
 
