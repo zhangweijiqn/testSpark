@@ -17,7 +17,7 @@ object testFPGrowth {
   val sc = new SparkContext(conf)
 
   def main(args: Array[String]) {
-    val data = sc.textFile("src/main/resources/sample_fpgrowth.txt")
+    val data = sc.textFile("test/src/main/resources/sample_fpgrowth.txt")
     val transactions: RDD[Array[String]] = data.map(s => s.trim.split(' '))
     val fpg = new FPGrowth()
       .setMinSupport(0.2)

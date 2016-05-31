@@ -1,7 +1,9 @@
 package MlTest.test001_baseTest
+/*
+* https://spark.apache.org/docs/latest/sql-programming-guide.html#dataframe-operations
+* */
 
-import breeze.linalg.sum
-import com.jd.jddp.dm.utils.UDFs
+import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.hive.HiveContext
 import org.apache.spark.{SparkContext, SparkConf}
@@ -11,10 +13,24 @@ import org.apache.spark.{SparkContext, SparkConf}
  */
 object testDataFrame {
 
-  def main(args: Array[String]) {
-    val conf = new SparkConf().setAppName("test DataFrame")
-    val sc = new SparkContext(conf)
+  val conf = new SparkConf().setAppName("test DataFrame")
+  val sc = new SparkContext(conf)
+  val hiveContext = new HiveContext(sc)
+
+  def test(): Unit ={
+    //implicit transform
     val hiveContext = new HiveContext(sc)
+
+    implicit def execSql(sql:String):DataFrame={
+      hiveContext.sql(sql)
+    }
+
+    val a ="select * from gdm.gdm_m03_item_sku_da limit 10"
+    a.printSchema()
+  }
+
+  def main(args: Array[String]) {
+
 
 
     /*  basic  */
@@ -24,9 +40,9 @@ object testDataFrame {
     // $ 为sqlContext提供的一个运算符，用来将col name转换为Column, 使用$的方式需要 import hiveContext.implicits._
     // na.drop 去除有缺失值的列。
     dataDF.show   //显示表的数据，默认显示前20行
-
     dataDF.printSchema  //查看表的schema
-
+    dataDF.select("name").show()
+    dataDF.groupBy("age").count().show()
 
     /* dataFrame map  group agg  sort*/
     val transRDD = dataDF.map(x=>(x.getAs[String]("user_log_acct"),x.getAs[String]("cate"),x.getAs[Seq[String]]("features"),x.getAs[String]("dt"),x.getAs[String]("type")))
@@ -41,6 +57,7 @@ object testDataFrame {
     val aggData = dataDF.groupBy("aaa").agg(count("bbb")) //agg默认是对所有聚合,先groupBy则是对aaa列的不同值进行聚合
     val sortData = aggData.sort($"bbb".desc)    //.asc升序，.desc降序
 
+
     /* describe求统计信息  */
     // Computes statistics for numeric columns, including count, mean, stddev, min, and max.
     // If no columns are given, this function computes statistics for all numerical columns.
@@ -51,6 +68,8 @@ object testDataFrame {
     /* UDF */
     hiveContext.udf.register("isExist", testUDF.isExist)
     hiveContext.sql("select isExist(features) from tableAAa where ")
+
+
 
   }
 }
