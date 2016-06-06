@@ -16,6 +16,9 @@ object testJoin {
     val joinRDD =  rdd1.join(rdd2)  //join后的类型为RDD[String,(Int,Int)],类似于数据库中join操作，RDD每个kv是一条记录，v和另一个RDD的所有v组合 ==相同key内value笛卡尔乘积
     joinRDD.foreach(x=>println(x._1+":"+x._2))
     println("count:"+joinRDD.count()) //65
+    rdd2.top(3).foreach(println)  //根据key排序
+    val reducedData = rdd2.map(x=>(x._1,1)).reduceByKey((a,b)=>a+b).sortBy(_._2,false).take(5)
+    reducedData.foreach(println)
   }
 
   def testCartesian(): Unit ={
