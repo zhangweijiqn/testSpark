@@ -15,7 +15,7 @@ object testDataFrame {
 
     //The entry point into all functionality in Spark SQL is the SQLContext class, or one of its descendants. To create a basic SQLContext, all you need is a SparkContext.0
     val sqlContext = new SQLContext(sc)
-
+    import sqlContext.implicits._
     //create dataframe
     val df = sqlContext.read.json("src/main/resources/people.json")
 
@@ -33,6 +33,9 @@ object testDataFrame {
     // Select everybody, but increment the age by 1
     df.select(df("name"), df("age") + 1).show()
 
+    // The following are equivalent:
+    df.selectExpr("colA", "colB as newName", "abs(colC)")
+
     // Select people older than 21
     df.filter(df("age") > 21).show()
 
@@ -41,6 +44,10 @@ object testDataFrame {
 
     val tableRDD = df.rdd.map(x=>(x(0),x.getString(1)))
     tableRDD.foreach(println)
+
+    sqlContext.table("gdm.gdm_m04_ord_det_sum").where($"dp"==="HISTORY" and $"dt">="2015-06-14").select("user_log_acct").distinct.count
+
+
 
   }
 }

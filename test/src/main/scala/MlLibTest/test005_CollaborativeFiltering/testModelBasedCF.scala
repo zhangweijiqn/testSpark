@@ -13,7 +13,7 @@ import org.apache.spark.mllib.recommendation.Rating
  * 目前支持基于模型的协同过滤，LFM算法，论文出处：http://ieeexplore.ieee.org/xpl/articleDetails.jsp?arnumber=4781121
  * spark.mllib uses the alternating least squares (ALS) algorithm to learn these latent factors.
  * 使用ALS（alternating least squares，交替最小二乘法）算法学习latent factors，论文出处：http://link.springer.com/chapter/10.1007%2F978-3-540-68880-8_32
- *
+ * ALS spark实现参考：http://www.csdn.net/article/2015-05-07/2824641
  *  LFM算法
  *
  * 测试数据主要用来处理隐式反馈数据
@@ -21,6 +21,7 @@ import org.apache.spark.mllib.recommendation.Rating
 object testModelBasedCF {
   val conf = new SparkConf().setMaster("local[2]").setAppName("testCF")
   val sc = new SparkContext(conf)
+  sc.setCheckpointDir("test/target/checkpoint")
 
   def main(args: Array[String]) {
 
@@ -31,16 +32,19 @@ object testModelBasedCF {
       Rating(user.toInt, item.toInt, rate.toDouble)
     })
 
+    //注意rating要求的id的格式是Int，Integer.MAX_VALUE= 2147483647, userId和itemId不能超过这个值的大小。
+
+
     // Build the recommendation model using ALS
     val rank = 10
-    val numIterations = 10
+    val numIterations = 100
     /*  rank： is the number of latent factors in the model.
         iterations： is the number of iterations to run.
         lambda： specifies the regularization parameter in ALS.
     */
-    val model = ALS.train(ratings, rank, numIterations, 0.01)//返回的model类型 MatrixFactorizationModel
+    val model = ALS.train(ratings, rank, numIterations, 0.01,-1,0)//返回的model类型 MatrixFactorizationModel，设定了seed参数（最后一个参数）每次执行结果就一致了
+    //也可以自己new ALS对象，然后调用setSeed方法来设置seed
     //可以为user推荐products，也可以为product推荐users
-
     //输出每个product计算得到的10个features
     val pF = model.productFeatures.map(x=>(x._1,x._2))
     pF.foreach{x=>

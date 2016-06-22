@@ -42,7 +42,13 @@ object testDataFrame {
     dataDF.show   //显示表的数据，默认显示前20行
     dataDF.printSchema  //查看表的schema
     dataDF.select("name").show()
+    dataDF.select($"colA", $"colB" + 1)
+    dataDF.select($"colA", $"colB" + 1)
     dataDF.groupBy("age").count().show()
+
+    // The following are equivalent:
+    dataDF.selectExpr("colA", "colB as newName", "abs(colC)")
+    dataDF.select(expr("colA"), expr("colB as newName"), expr("abs(colC)"))
 
     /* dataFrame map  group agg  sort*/
     val transRDD = dataDF.map(x=>(x.getAs[String]("user_log_acct"),x.getAs[String]("cate"),x.getAs[Seq[String]]("features"),x.getAs[String]("dt"),x.getAs[String]("type")))

@@ -10,6 +10,9 @@ import org.apache.spark.{SparkContext, SparkConf}
  * FP-Growth论文：Han et al., Mining frequent patterns without candidate generation （FP stands for frequent pattern.）
  * spark实现并行版PFP: dl.acm.org/citation.cfm?doid=1454008.1454027
  * well known algorithms are Apriori, Eclat and FP-Growth, spark.mllib provides a parallel implementation of FP-growth, a popular algorithm to mining frequent itemsets.
+ *
+ * 没有用到lift值。
+ *
  */
 object testFPGrowth {
 
@@ -19,14 +22,16 @@ object testFPGrowth {
   def main(args: Array[String]) {
     val data = sc.textFile("test/src/main/resources/sample_fpgrowth.txt")
     val transactions: RDD[Array[String]] = data.map(s => s.trim.split(' '))
+    //数据输入格式 RDD[Array[String]]
     val fpg = new FPGrowth()
-      .setMinSupport(0.2)
+      .setMinSupport(0.02)
       .setNumPartitions(10)
     val model = fpg.run(transactions) //run参数类型为RDD[Array[Item]]，Item是一个泛型类型
 
     model.freqItemsets.collect().foreach { itemset =>
       println(itemset.items.mkString("[", ",", "]") + ", " + itemset.freq)
     }
+
     val minConfidence = 0.8
     model.generateAssociationRules(minConfidence).collect().foreach { rule =>
       println(
@@ -34,5 +39,7 @@ object testFPGrowth {
           + " => " + rule.consequent .mkString("[", ",", "]")
           + ", " + rule.confidence)
     }
+    //数据输出格式
+
   }
 }
