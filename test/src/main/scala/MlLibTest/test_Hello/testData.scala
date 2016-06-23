@@ -60,5 +60,8 @@ object testData {
     import java.lang.Double.isNaN
     parsed_data1.map(md=>md._2(0)).filter(!isNaN(_)).stats()  //使用java的isNan来判断是否存在NaN,stats输出统计信息，RDD[Double]类型隐式调用
 
+    val lookupData = parsed_data1.lookup(1.0)
+    lookupData.foreach(println) //Seq[Array[Double]]
+
   }
 }

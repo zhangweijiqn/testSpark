@@ -31,7 +31,7 @@ object testModelBasedCF {
       //读入的格式为一个3元组，格式(user,item,ratings),相当于每个元组为原matrix的一个元素
       //要求用户和产品ID都是数值型，并且都是32位非负整数，也就是id不能大于 Integer.MAX_VALUE  2,147,483,647 大约21亿
       Rating(user.toInt, item.toInt, rate.toDouble)
-    })
+    }).cache()    //ALS算法是迭代的，如果没有cache会每次要用到 RDD 时都需要从原始数据中重新计算。
 
     //注意rating要求的id的格式是Int，Integer.MAX_VALUE= 2147483647, userId和itemId不能超过这个值的大小。
 
@@ -45,14 +45,12 @@ object testModelBasedCF {
     */
     val model = ALS.train(ratings, rank, numIterations, 0.01,-1,0)//返回的model类型 MatrixFactorizationModel，设定了seed参数（最后一个参数）每次执行结果就一致了
     //也可以自己new ALS对象，然后调用setSeed方法来设置seed
-    //可以为user推荐products，也可以为product推荐users
+    //得到 model.productFeatures, model.userFeatures
+
+    model.userFeatures.mapValues(_.mkString(",")).foreach(println)
+
     //输出每个product计算得到的10个features
-    val pF = model.productFeatures.map(x=>(x._1,x._2))
-    pF.foreach{x=>
-      print(x._1+":")
-      x._2.foreach(e=>print(e+","))
-      println
-    }
+    model.productFeatures.mapValues(_.mkString(",")).foreach(println)
 
     // Evaluate the model on rating data
     val userProducts = ratings.map{case Rating(user,product,rate)=>(user,product)}.++(sc.parallelize(Seq((1,3),(4,3))))   //数据集故意去掉了这两个，留作预测
