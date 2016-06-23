@@ -16,7 +16,7 @@ object testData {
   def parse1(line:String) ={
     val pieces = line.split(",")
     val label = toDouble(pieces(0))
-    val scores = pieces(1).split(" ").slice(0,3).map(toDouble)  //slice选取0到第3列，正常用所有的可以省略,转换方法用自定义toDouble
+    val scores = pieces(1).trim.split(" ").slice(0,3).map(toDouble)  //slice选取0到第3列，trim处理字符两端空字符,转换方法用自定义toDouble
     (label,scores)
     //这种方式访问需要使用 ._1, ._2
   }
@@ -25,7 +25,7 @@ object testData {
   def parse2(line:String) ={
     val (label_ori,scores_ori) = line.span(_ != '\t') //span,在第一个满足条件的地方split
     val label = label_ori.toDouble
-    val scores = scores_ori.split(" ").slice(0,3).map(toDouble)  //slice选取0到第3列，正常用所有的可以省略,转换方法用自定义toDouble
+    val scores = scores_ori.trim.split(" ").slice(0,3).map(toDouble)  //slice选取0到第3列，正常用所有的可以省略,转换方法用自定义toDouble
     MatchData(label,scores)
     //这种方式可以通过 .label, .scores来访问
   }
