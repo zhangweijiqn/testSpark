@@ -21,7 +21,7 @@ object testKMeans {
     val numClusters = 2
     val numIterations = 20
     val clusters = KMeans.train(parsedData, numClusters, numIterations) //传入数据行的格式是Vector
-    //计算两个点的距离使用的方法是Vectors.sqdist(squared distance between two Vectors.)
+    //计算两个点的距离使用的方法是Vectors.sqdist(squared distance between two Vectors.)，目前只支持欧氏距离
 
     val clusterCenter = clusters.clusterCenters //得到聚类中心
     clusterCenter.foreach(x=>{

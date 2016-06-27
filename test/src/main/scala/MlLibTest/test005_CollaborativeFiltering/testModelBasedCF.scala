@@ -39,12 +39,19 @@ object testModelBasedCF {
     // Build the recommendation model using ALS
     val rank = 10
     val numIterations = 100
+    val lambda = 0.01
+    val blocks = 10
+    val alpha = 40.0
+    val seed = 0
     /*  rank： is the number of latent factors in the model.
-        iterations： is the number of iterations to run.
-        lambda： specifies the regularization parameter in ALS.
+        iterations： is the number of iterations to run.迭代次数越多可能分解的结果就越好
+        lambda： specifies the regularization parameter in ALS. 越大越不容易过拟合，但会降低分解的精度。
+        blocks     level of parallelism to split computation into
+        alpha      confidence parameter
+        seed       random seed for initial matrix factorization model,也可以自己new ALS对象，然后调用setSeed方法来设置seed
     */
-    val model = ALS.train(ratings, rank, numIterations, 0.01,-1,0)//返回的model类型 MatrixFactorizationModel，设定了seed参数（最后一个参数）每次执行结果就一致了
-    //也可以自己new ALS对象，然后调用setSeed方法来设置seed
+    val model = ALS.trainImplicit(ratings, rank, numIterations, lambda,blocks,alpha,seed)//返回的model类型 MatrixFactorizationModel，设定了seed参数（最后一个参数）每次执行结果就一致了
+    /* ALS.trainImplicit适用于次数等隐式反馈数据，ALS.train适用于评分等显式反馈数据*/
     //得到 model.productFeatures, model.userFeatures
 
     model.userFeatures.mapValues(_.mkString(",")).foreach(println)

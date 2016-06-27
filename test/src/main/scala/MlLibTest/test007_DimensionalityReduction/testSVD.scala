@@ -9,7 +9,7 @@ import org.apache.spark.mllib.linalg.{Matrix, Matrices}
 
 /**
  * Created by zhangwj on 16-4-17.
- *
+ *Singular value decomposition (SVD) 奇异值分解
  * SVD : https://en.wikipedia.org/wiki/Singular_value_decomposition
  */
 object testSVD {
@@ -19,6 +19,7 @@ object testSVD {
 
   def main(args: Array[String]) {
     val rows: RDD[Vector] = sc.parallelize(Seq(Vectors.dense(1,2,3,4),Vectors.dense(5,6,7,8),Vectors.dense(2,3,4,5))) // an RDD of local vectors
+    rows.cache()  //计算过程中会多次使用rdd，事先将rdd缓存起来
     // Create a RowMatrix from an RDD[Vector].
     val mat: RowMatrix = new RowMatrix(rows)  //将RDD[Vector]转换为二维的Matrix
 

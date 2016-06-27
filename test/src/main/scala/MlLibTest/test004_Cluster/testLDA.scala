@@ -6,7 +6,7 @@ import org.apache.spark.{SparkContext, SparkConf}
 
 /**
  * Created by zhangwj on 16-4-7.
- * LDA（Latent Dirichlet Allocation）是一种文档主题生成模型
+ * LDA（Latent Dirichlet Allocation）隐含狄利克雷分布，是一种文档主题生成模型
  */
 object testLDA {
   val conf = new SparkConf().setAppName("testKMeans").setMaster("local[2]")
