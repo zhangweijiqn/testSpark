@@ -38,7 +38,7 @@ object testPipeline {
       .setNumFeatures(1000)
       .setInputCol(tokenizer.getOutputCol)
       .setOutputCol("features")
-    val lr = new LogisticRegression()     //estimator
+    val lr = new LogisticRegression()     //est imator
       .setMaxIter(10)
       .setRegParam(0.01)
     val pipeline = new Pipeline()

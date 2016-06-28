@@ -4,6 +4,7 @@ package MlLibTest.test006_Feature
  * Created by zhangwj on 16-6-27.
  * 参考：https://www.ibm.com/developerworks/cn/opensource/os-cn-spark-practice6/
  * 首先将文本句子转化成单词数组，进而使用 Word2Vec 工具将单词数组转化成一个 K 维向量，最后通过训练 K 维向量样本数据得到一个前馈神经网络模型，以此来实现文本的类别标签预测。
+ * spark pipeline
  */
 import org.apache.spark.ml.Pipeline
 import org.apache.spark.ml.classification.MultilayerPerceptronClassifier
@@ -23,7 +24,7 @@ object SMSClassifier {
     val sc = new SparkContext(conf)
     val sqlCtx = new SQLContext(sc)
     val parsedRDD = sc.textFile("test/src/main/resources/SMSSpamCollection").map(_.split("\t")).map(eachRow => {
-      (eachRow(0),eachRow(1).split(" "))
+      (eachRow(0),eachRow(1).split(" "))  //RDD[String,Array[String]]
     })
     val msgDF = sqlCtx.createDataFrame(parsedRDD).toDF("label","message")
     val labelIndexer = new StringIndexer()
@@ -52,7 +53,7 @@ object SMSClassifier {
       .setOutputCol("predictedLabel")
       .setLabels(labelIndexer.labels)
 
-    val Array(trainingData, testData) = msgDF.randomSplit(Array(0.8, 0.2))
+    /*val Array(trainingData, testData) = msgDF.randomSplit(Array(0.8, 0.2))
 
     val pipeline = new Pipeline().setStages(Array(labelIndexer,word2Vec,mlpc,labelConverter))
     val model = pipeline.fit(trainingData)
@@ -68,6 +69,6 @@ object SMSClassifier {
       .setMetricName("precision")
     val predictionAccuracy = evaluator.evaluate(predictionResultDF)
     println("Testing Accuracy is %2.4f".format(predictionAccuracy * 100) + "%")
-    sc.stop
+    sc.stop*/
   }
 }

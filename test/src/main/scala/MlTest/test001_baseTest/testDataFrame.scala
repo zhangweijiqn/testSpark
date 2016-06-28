@@ -75,10 +75,6 @@ object testDataFrame {
     val newDF = dataDF.withColumn("aaa", lit("bbb"))  //df增加一个新列
     //withColumn Returns a new DataFrame by adding a column or replacing the existing column that has the same name.
 
-    /* UDF */
-    hiveContext.udf.register("isExist", testUDF.isExist)
-    hiveContext.sql("select isExist(features) from tableAAa where ")
-
 
 
   }

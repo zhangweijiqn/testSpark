@@ -2,6 +2,7 @@ package SQLTest.test003_sql
 
 import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.spark.sql.hive.HiveContext
+import SQLTest.test003_sql.testUDF
 
 /**
  * Created by zhangwj on 16-3-1.
@@ -37,9 +38,17 @@ object testSql {
 
   }
 
+  def UDFtest()={
+    /* UDF */
+    hiveContext.udf.register("isExist", testUDF.isExist)
+    hiveContext.sql("select isExist(features) from tableAAa where ")
+  }
+
   def main(args: Array[String]) {
 
     test1
+    test2
+    UDFtest
 
   }
 }
