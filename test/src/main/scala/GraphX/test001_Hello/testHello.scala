@@ -18,13 +18,13 @@ object testHello {
 
 
     // Create an RDD for the vertices,创建顶点
-    val vertices: RDD[(VertexId, (String, String))] =  //使用VertexId类型来记录顶点id
-      sc.parallelize(Array((3L, ("rxin", "student")), (7L, ("jgonzal", "postdoc")),
-        (5L, ("franklin", "prof")), (2L, ("istoica", "prof"))))
+    val vertices: RDD[(VertexId, (String, String,Int))] =  //(String, String,Int)类型自定义，使用VertexId类型来记录顶点id
+      sc.parallelize(Array((3L, ("rxin", "student",25)), (7L, ("jgonzal", "postdoc",26)),
+        (5L, ("franklin", "prof",24)), (2L, ("istoica", "prof",25))))
 
     // Create an RDD for edges，创建边
     val edges: RDD[Edge[String]] =    //每条边的类型Edge
-      sc.parallelize(Array(Edge(3L, 7L, "collab"),    Edge(5L, 3L, "advisor"),
+      sc.parallelize(Array(Edge(3L, 7L, "collab"),    Edge(5L, 3L, "advisor"),  //第三个字段类型也自定
         Edge(2L, 5L, "colleague"), Edge(5L, 7L, "pi")))
 
     // Build the initial Graph
@@ -44,7 +44,7 @@ object testHello {
     //图操作参考Graph方法
 
     // Count all users which are postdocs
-    val postdocsNum = graph.vertices.filter { case (id, (name, pos)) => pos == "postdoc" }.count
+    val postdocsNum = graph.vertices.filter { case (id, (name, pos,age)) => pos == "postdoc" }.count
     println(postdocsNum)
     // Count all the edges where src > dst
     var Num = graph.edges.filter(e => e.srcId >= e.dstId).count
