@@ -35,6 +35,8 @@ object testLogisticRegression {
       .setNumClasses(2)
       .run(training)
 
+    model
+
     // Compute raw scores on the test set.
     val predictionAndLabels = test.map { case LabeledPoint(label, features) =>
       val prediction = model.predict(features)
