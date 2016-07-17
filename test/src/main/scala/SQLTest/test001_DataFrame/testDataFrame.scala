@@ -7,16 +7,21 @@ import org.apache.spark.{SparkContext, SparkConf}
  *  Created by zhangwj on 16-3-1.
  *  https://spark.apache.org/docs/latest/api/scala/index.html#org.apache.spark.sql.DataFrame
  */
+// case class 要放在object外面，否则报错
+case class Person(name: String, age: Long)
+
 object testDataFrame {
-  def main(args: Array[String]) {
 
-    val conf = new SparkConf().setAppName("hello").setMaster("local[2]").setSparkHome(System.getenv("SPARK_HOME"))
-    val sc = new SparkContext(conf)
+  val conf = new SparkConf().setAppName("hello").setMaster("local[2]").setSparkHome(System.getenv("SPARK_HOME"))
+  val sc = new SparkContext(conf)
 
-    //The entry point into all functionality in Spark SQL is the SQLContext class, or one of its descendants. To create a basic SQLContext, all you need is a SparkContext.0
-    val sqlContext = new SQLContext(sc)
-    import sqlContext.implicits._
+  //The entry point into all functionality in Spark SQL is the SQLContext class, or one of its descendants. To create a basic SQLContext, all you need is a SparkContext.0
+  val sqlContext = new SQLContext(sc)
+  import sqlContext.implicits._
+
+  def test1() ={
     //create dataframe
+//    val df = sqlContext.read.json("src/main/resources/people.json")
     val df = sqlContext.read.json("src/main/resources/people.json")
 
     //DataFrame Operations
@@ -47,7 +52,19 @@ object testDataFrame {
 
     sqlContext.table("gdm.gdm_m04_ord_det_sum").where($"dp"==="HISTORY" and $"dt">="2015-06-14").select("user_log_acct").distinct.count
 
+  }
 
+  def test2(): Unit ={
+    // DataFrames can be converted to a Dataset by providing a class. Mapping will be done by name.
+    val path = "test/src/main/resources/people.json"
+    val people = sqlContext.read.json(path).as[Person]  //得到的是DataSet
+    people.show
+  }
+
+  def main(args: Array[String]) {
+
+//    test1
+    test2
 
   }
 }

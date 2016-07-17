@@ -35,8 +35,8 @@ object testHello {
     //会计算一会，顶点集合，：Array((1,1), (2,2), (3,2), (5,2), (7,2))，第二个元素是一个联通子图的唯一标志符，可以看到有两个联通子图
     val componentCounts = connectedCompoentGraph.vertices.map(_._2).countByValue
     //  Map(1 -> 1, 2 -> 4)，得到联通组件的个数和大小,2
-    val sortedCompotents = componentCounts.toSeq.sortBy(_._2).reverse
-    //ArrayBuffer((2,4), (1,1))，第一个联通子图4个顶点，第二个一个顶点
+    val sortedCompotents = componentCounts.toSeq.sortBy(_._2).reverse //按从大到小顺序排序
+    //ArrayBuffer((2,4), (1,1))，第一个联通子图4个顶点，第二个1个顶点
 
     //度的分布
     val degrees = graph.degrees.cache()

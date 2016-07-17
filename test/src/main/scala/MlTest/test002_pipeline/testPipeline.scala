@@ -6,8 +6,6 @@ import org.apache.spark.{SparkConf, SparkContext}
 /**
  * Created by zhangwj on 16-3-7.
  *
- * 测试仍有错
- *
  */
 object testPipeline {
 

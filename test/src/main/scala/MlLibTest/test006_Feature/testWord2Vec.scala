@@ -5,6 +5,7 @@ import org.apache.spark.mllib.feature.{Word2Vec, Word2VecModel}
 /**
  * Created by zhangwj on 16-6-21.
  * word2vec是一个将单词转换成向量形式的工具
+ * 训练语料库：wget http://mattmahoney.net/dc/text8.zip
  */
 object testWord2Vec {
   def main(args: Array[String]) {

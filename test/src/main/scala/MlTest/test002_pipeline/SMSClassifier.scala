@@ -1,4 +1,4 @@
-package MlLibTest.test006_Feature
+package MlTest.test002_pipeline
 
 /**
  * Created by zhangwj on 16-6-27.
@@ -11,7 +11,7 @@ import org.apache.spark.ml.classification.MultilayerPerceptronClassifier
 import org.apache.spark.ml.evaluation.MulticlassClassificationEvaluator
 import org.apache.spark.ml.feature.{IndexToString, StringIndexer, Word2Vec}
 import org.apache.spark.sql.SQLContext
-import org.apache.spark.{SparkContext, SparkConf}
+import org.apache.spark.{SparkConf, SparkContext}
 
 object SMSClassifier {
   final val VECTOR_SIZE = 100
@@ -53,7 +53,7 @@ object SMSClassifier {
       .setOutputCol("predictedLabel")
       .setLabels(labelIndexer.labels)
 
-    /*val Array(trainingData, testData) = msgDF.randomSplit(Array(0.8, 0.2))
+    val Array(trainingData, testData) = msgDF.randomSplit(Array(0.8, 0.2))
 
     val pipeline = new Pipeline().setStages(Array(labelIndexer,word2Vec,mlpc,labelConverter))
     val model = pipeline.fit(trainingData)
@@ -69,6 +69,6 @@ object SMSClassifier {
       .setMetricName("precision")
     val predictionAccuracy = evaluator.evaluate(predictionResultDF)
     println("Testing Accuracy is %2.4f".format(predictionAccuracy * 100) + "%")
-    sc.stop*/
+    sc.stop
   }
 }

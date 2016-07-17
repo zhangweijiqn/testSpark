@@ -71,6 +71,11 @@ object testExample {
     println("max of outDegrees:" + graph.outDegrees.reduce(max) + " max of inDegrees:" + graph.inDegrees.reduce(max) + " max of Degrees:" + graph.degrees.reduce(max))
     println
 
+    println("度的统计信息：")
+    println(graph.degrees.map(_._2).stats())
+    //(count: 6, mean: 2.666667, stdev: 0.745356, max: 4.000000, min: 2.000000)
+    println
+
     //***********************************************************************************
     //***************************  转换操作    ****************************************
     //**********************************************************************************
@@ -202,6 +207,8 @@ object testExample {
     println("获取5个triplet信息")
     println("**********************************************************")
     graph.triplets.take(5).foreach(println(_))
+    //( (146271392968588,Computer Consoles Inc.),(7097126743572404313,Berkeley Software Distribution), 0)
+    // triplet包含边和顶点信息的聚合
 
     //pageRank算法里面的时候使用了cache()，故前面persist的时候只能使用MEMORY_ONLY
     println("**********************************************************")
@@ -223,8 +230,8 @@ object testExample {
     Logger.getLogger("org.apache.spark").setLevel(Level.WARN)
     Logger.getLogger("org.eclipse.jetty.server").setLevel(Level.OFF)
 
-    //baseTest()
-    testPageRank()
+    baseTest()
+//    testPageRank()
     sc.stop()
   }
 }
