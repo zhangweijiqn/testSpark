@@ -61,6 +61,11 @@
             <version>${scala.binary.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>ml.dmlc</groupId>
+            <artifactId>xgboost4j</artifactId>
+            <version>0.5</version>
+        </dependency>
         <!--OptionParser-->
         <!--        <dependency>
                     <groupId>com.github.scopt</groupId>

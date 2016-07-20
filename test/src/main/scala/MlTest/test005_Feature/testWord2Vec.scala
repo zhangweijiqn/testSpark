@@ -6,10 +6,11 @@ import org.apache.spark.{SparkConf, SparkContext}
 
 /**
  * Created by zhangwj on 16-7-17.
- * word2vec通过将输入的语料库进行训练，将单词/句子转换为向量，可以用来找同义词
+ * word2vec通过将输入的语料库进行训练，将单词/句子转换为向量，可以用来找同义词，模型可以输出每个词及其对应的浮点向量
  * 训练语料库：wget http://mattmahoney.net/dc/text8.zip 解压后大小96M
  */
-object testWord2Vect {
+
+object testWord2Vec {
   val sc = new SparkContext(new SparkConf().setAppName("testPipeline").setMaster("local[2]"))
   val sqlContext = new SQLContext(sc)
   def main(args: Array[String]) {
