@@ -10,6 +10,8 @@ package XGBoost
  * 在源代码的xgboost/jvm-packages/xgboost4j/target路径下有 xgboost生成的jar包
  *
  *  mvn install:install-file -Dfile=xgboost4j-0.5.jar -DgroupId=ml.dmlc -DartifactId=xgboost4j -Dversion=0.5 -Dpackaging=jar
+ *
+ *  有专门xgboost on spark
  * */
 
 import ml.dmlc.xgboost4j.scala.DMatrix
