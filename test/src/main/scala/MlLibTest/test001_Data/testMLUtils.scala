@@ -17,7 +17,7 @@ object testMLUtils {
   def testLoadLabeledData(): Unit ={
 
     //读取矩阵，格式为（Label,f1 f2 f3...）注意分隔符才（从loadLabeledData可以看出）
-    val data = MLUtils.loadLabeledData(sc,"src/main/resources/test.txt")
+    val data = MLUtils.loadLabeledPoints(sc,"src/main/resources/test.txt")
     data.foreach(println _)
 
     //保存的格式为(Label,[f1,f2,f3,...]
