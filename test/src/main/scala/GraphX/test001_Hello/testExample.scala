@@ -143,7 +143,7 @@ object testExample {
     println("聚合操作")
     println("**********************************************************")
     println("找出年纪最大的追求者：")
-    val oldestFollower: VertexRDD[(String, Int)] = userGraph.mapReduceTriplets[(String, Int)](
+    /*val oldestFollower: VertexRDD[(String, Int)] = userGraph.mapTriplets()[(String, Int)](
       // 将源顶点的属性发送给目标顶点，map过程
       edge => Iterator((edge.dstId, (edge.srcAttr.name, edge.srcAttr.age))),
       // 得到最大追求者，reduce过程
@@ -156,7 +156,7 @@ object testExample {
         case Some((name, age)) => s"${name} is the oldest follower of ${user.name}."
       }
     }.collect.foreach { case (id, str) => println(str)}
-    println
+    println*/
 
     //***********************************************************************************
     //***************************  实用操作    ****************************************

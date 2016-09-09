@@ -40,7 +40,7 @@ object testSpecifySchema {
 
     val results = sqlContext.sql("select name,age from people where age>=20")
     println("name , age")
-    results.map(r=>"["+r(0)+","+r(1)+"]").foreach(println)
+//    results.map(r=>"["+r(0)+","+r(1)+"]").foreach(println)
 
   }
 }

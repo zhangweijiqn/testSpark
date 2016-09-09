@@ -34,7 +34,7 @@ object testSql {
       .toDF()
     data.registerTempTable("employees")
     val emplyee_Number = hiveContext.sql("select count(*) from employees")
-    emplyee_Number.foreach(println)
+//    emplyee_Number.foreach(println)
 
   }
 

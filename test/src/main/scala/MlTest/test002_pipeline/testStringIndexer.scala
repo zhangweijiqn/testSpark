@@ -35,7 +35,7 @@ object testStringIndexer {
       .fit(df)
     //大概过程是先将列fit进去，StringIndexer会做一个转换，保存一个kv类型的数据，对label进行映射，后面transform将传入的数据label进行转换。
     val labelIndex = labelIndexer.transform(df)
-    labelIndex.foreach(println)
+//    labelIndex.foreach(println)
 
   }
 }

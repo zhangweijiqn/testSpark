@@ -40,6 +40,6 @@ object testInferSchema {
     teenagers.map(r=>"name:"+r.getAs[String]("name")).collect().foreach(println)
 
     // row.getValuesMap[T] retrieves multiple columns at once into a Map[String, T],检索多列  getValuesMap
-    teenagers.map( _.getValuesMap[Any](List("name","age")) ).collect().foreach(println) //each row is:  Map(name -> Michael1, age -> 18)
+//    teenagers.map( _.getValuesMap[Any](List("name","age")) ).collect().foreach(println) //each row is:  Map(name -> Michael1, age -> 18)
   }
 }
