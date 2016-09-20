@@ -67,6 +67,12 @@
             <version>0.5</version>
         </dependency>
 
+        <dependency>
+            <groupId>ml.dmlc</groupId>
+            <artifactId>xgboost4j-spark</artifactId>
+            <version>0.5</version>
+        </dependency>
+
         <!-- https://mvnrepository.com/artifact/com.databricks/spark-csv_2.10 -->
         <dependency>
             <groupId>com.databricks</groupId>
