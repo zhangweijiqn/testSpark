@@ -29,6 +29,7 @@ object testDataFrame {
     a.printSchema()
   }
 
+
   def main(args: Array[String]) {
 
 
@@ -53,7 +54,7 @@ object testDataFrame {
     /* dataFrame map  group agg  sort*/
     val transRDD = dataDF.map(x=>(x.getAs[String]("user_log_acct"),x.getAs[String]("cate"),x.getAs[Seq[String]]("features"),x.getAs[String]("dt"),x.getAs[String]("type")))
     //DataFrame map 返回 RDD
-    val groupUsers = transRDD .toDF.groupBy($"_2").agg(count($"_2")).sort($"count(_2)".desc)
+    val groupUsers = transRDD.toDF.groupBy($"_2").agg(count($"_2")).sort($"count(_2)".desc)
     // agg可以使用一些聚合函数
     //toDF后列名为_1,_2,...，聚合后列名为 count(_2)
 

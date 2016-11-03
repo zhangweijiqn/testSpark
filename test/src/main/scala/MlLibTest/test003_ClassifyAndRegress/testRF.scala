@@ -15,7 +15,7 @@ object testRF {
   val sc = new SparkContext(conf)
 
   def main(args: Array[String]) {
-    val data: RDD[LabeledPoint] = MLUtils.loadLibSVMFile(sc, "src/main/resources/sample_libsvm_data.txt")
+    val data: RDD[LabeledPoint] = MLUtils.loadLibSVMFile(sc, "test/src/main/resources/sample_libsvm_data.txt")
     println(data.first())
     // Split the data into training and test sets (30% held out for testing)
     val splits = data.randomSplit(Array(0.7, 0.3))
@@ -62,6 +62,7 @@ object testRF {
       val prediction = model.predict(point.features)
       (point.label, prediction)
     }
+    labelAndPreds.collect().foreach(println)
     val testErr = labelAndPreds.filter(r => r._1 != r._2).count.toDouble / testData.count()
     println("Test Error = " + testErr)
     println("Learned classification forest model:\n" + model.toDebugString)

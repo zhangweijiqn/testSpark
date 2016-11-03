@@ -22,7 +22,7 @@ object testSVM {
     import org.apache.spark.mllib.evaluation.BinaryClassificationMetrics
     import org.apache.spark.mllib.util.MLUtils
 
-    val data: RDD[LabeledPoint] = MLUtils.loadLibSVMFile(sc, "src/main/resources/sample_libsvm_data.txt")
+    val data: RDD[LabeledPoint] = MLUtils.loadLibSVMFile(sc, "test/src/main/resources/sample_libsvm_data.txt")
 
     // Split data into training (60%) and test (40%).
     val splits = data.randomSplit(Array(0.6, 0.4), seed = 11L)

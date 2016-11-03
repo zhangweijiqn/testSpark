@@ -61,6 +61,16 @@ object testDataFrame {
     people.show
   }
 
+  def test3(): Unit ={
+    val tab = sqlContext.table("tmp.users__profile")
+//    获取列名
+    val column_names = tab.columns //Array(user_log_acct, cpp_addr_county, cpp_addr_province...
+//    获取列名及类型
+    val column_KT = tab.dtypes  //Array[(String, String)] = Array((user_log_acct,StringType), (cpp_addr_county,StringType))
+
+  }
+
+
   def main(args: Array[String]) {
 
 //    test1
