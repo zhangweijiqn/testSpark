@@ -16,7 +16,7 @@ object testGBTsClassification {
     val sc = new SparkContext(conf)
     // $example on$
     // Load and parse the data file.格式LabeledPoint
-    val data = MLUtils.loadLibSVMFile(sc, "src/main/resources/sample_libsvm_data.txt")
+    val data = MLUtils.loadLibSVMFile(sc, "test/src/main/resources/sample_libsvm_data.txt")
     // Split the data into training and test sets (30% held out for testing)
     val splits = data.randomSplit(Array(0.7, 0.3))
     val (trainingData, testData) = (splits(0), splits(1))
@@ -49,7 +49,6 @@ We include a few guidelines for using GBTs by discussing the various parameters.
     val model = GradientBoostedTrees.train(trainingData, boostingStrategy)
     println(model.toDebugString)//可以看到每棵树
 
-
     // Evaluate model on test instances and compute test error
     val labelAndPreds = testData.map { point =>
       val prediction = model.predict(point.features)
@@ -58,7 +57,6 @@ We include a few guidelines for using GBTs by discussing the various parameters.
     val testErr = labelAndPreds.filter(r => r._1 != r._2).count.toDouble / testData.count()
     println("Test Error = " + testErr)
     println("Learned classification GBT model:\n" + model.toDebugString)
-
     // Save and load model
     model.save(sc, "target/tmp/myGradientBoostingClassificationModel")
     val sameModel = GradientBoostedTreesModel.load(sc,

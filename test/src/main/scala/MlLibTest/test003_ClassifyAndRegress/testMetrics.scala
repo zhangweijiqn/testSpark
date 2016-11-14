@@ -84,6 +84,7 @@ object testMetrics {
     // AUROC
     val auROC = metrics.areaUnderROC
     println("Area under ROC = " + auROC)
+
   }
 
   def testMulticlassClassification(): Unit ={
@@ -187,8 +188,8 @@ object testMetrics {
 
   def main(args: Array[String]) {
 //    testBinaryClassification()
-//    testMulticlassClassification()
-    testRegressionEvaluation()
+    testMulticlassClassification()
+//    testRegressionEvaluation()
   }
 
 }
