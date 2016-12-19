@@ -1,6 +1,6 @@
 # testSpark
 this project is a test for spark
-mainly mllib
+mainly test for mllib
 
 
 参考：http://pad.haroopress.com/page.html?f=syntax
