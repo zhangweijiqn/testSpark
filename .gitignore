@@ -1,6 +1,0 @@
-*target*
-*idea*
-src/main/resources/*.jar
-src/main/resources/data/
-*.iml
-rec.log*
